@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST="{\"app\\\\page.tsx -> @/components/WorldMap\":{\"id\":\"app\\\\page.tsx -> @/components/WorldMap\",\"files\":[\"static/css/_app-pages-browser_src_components_WorldMap_tsx.css\",\"static/chunks/_app-pages-browser_src_components_WorldMap_tsx.js\"]}}"
+self.__REACT_LOADABLE_MANIFEST="{\"app/page.tsx -> @/components/WorldMap\":{\"id\":\"app/page.tsx -> @/components/WorldMap\",\"files\":[\"static/css/_app-pages-browser_src_components_WorldMap_tsx.css\",\"static/chunks/_app-pages-browser_src_components_WorldMap_tsx.js\"]}}"
