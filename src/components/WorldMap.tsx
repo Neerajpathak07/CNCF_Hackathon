@@ -1,4 +1,6 @@
+
 'use client';
+
 
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer } from 'react-leaflet';
@@ -33,13 +35,13 @@ const WorldMap: React.FC<WorldMapProps> = ({ buoyData }) => {
     <MapContainer
       center={mapCenter}
       zoom={mapZoom}
-      style={{ height: '100%', width: '100%' }}
+      style={{ height: '500px', width: '1500px' }}
       className="rounded-2xl z-10"
       zoomControl={false}
       attributionControl={false}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         attribution=""
       />
       
