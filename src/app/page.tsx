@@ -15,7 +15,7 @@ const WorldMap = dynamic(() => import('@/components/WorldMap'), {
 });
 
 export default function Home() {
-  const { buoyData, isConnected, lastUpdate } = useBuoyData();
+  const { buoyData, isConnected } = useBuoyData();
 
   return (
     <div className="min-h-screen relative overflow-hidden">
@@ -28,7 +28,6 @@ export default function Home() {
             <StatusBar 
               isConnected={isConnected}
               buoyCount={buoyData.filter((b: { status: string; }) => b.status === 'active').length}
-              lastUpdate={lastUpdate}
             />
           </div>
         </div>
