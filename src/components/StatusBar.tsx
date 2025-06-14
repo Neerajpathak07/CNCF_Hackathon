@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 interface StatusBarProps {
   isConnected: boolean;
   buoyCount: number;
+  lastUpdate: Date;
 }
 
 const StatusBar: React.FC<StatusBarProps> = ({ isConnected, buoyCount }) => {
