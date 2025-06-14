@@ -14,7 +14,7 @@ CloudWave is a modern, cloud-native web application built with React, Next.js, a
  - Interactive World Map: Beautiful Leaflet.js integration with dark theme
  - Real-time Data Streaming: Live updates every 5 seconds with WebSocket support
  - Modern Tech Stack: React 18, Next.js 14, TypeScript, Tailwind CSS
- - Cloud-Native Ready: Kubernetes deployment with monitoring integration
+ - Cloud-Native Ready: Docker deployment with monitoring integration
  - Responsive Design: Works seamlessly across all devices
  - Modern UI/UX: Glassmorphism effects, smooth animations, gradient text
  - Real-time API: RESTful endpoints with live data updates
@@ -40,7 +40,6 @@ cloudwave/
 │   └── types/
 │       └── buoy.ts                  # TypeScript type definitions
 ├── docker/
-│   ├── Dockerfile                   # Production Docker image
 │   ├── Dockerfile.dev              # Development Docker image
 │   └── docker-compose.yml          # Local development setup
 ├── index.html                       # In-line html file to reflect a basic Idea of the react app
