@@ -1,3 +1,9 @@
+
+
+import WorldMap from './WorldMap';
+
+
+
 const HeroSection: React.FC = () => {
   return (
     <div className="text-center py-16 px-4 relative z-10 bg-gradient-to-b from-slate-900/90 to-slate-900/70">
