@@ -1,0 +1,376 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudWave - Real-time Water Buoy Monitoring</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .container {
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.9) 0%, rgba(15, 23, 42, 0.7) 100%);
+        }
+
+        .title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #60a5fa, #34d399, #a78bfa);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+            animation: titleReveal 2s ease-out;
+            text-shadow: 0 0 30px rgba(96, 165, 250, 0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: #cbd5e1;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            line-height: 1.6;
+            animation: subtitleReveal 2s ease-out 0.5s both;
+        }
+
+        .map-container {
+            height: 70vh;
+            margin: 2rem;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            position: relative;
+            animation: mapReveal 2s ease-out 1s both;
+            border: 2px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .status-bar {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 12px 20px;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
+        }
+
+        .buoy-popup {
+            background: rgba(15, 23, 42, 0.95);
+            border: none;
+            border-radius: 15px;
+            padding: 20px;
+            color: white;
+            min-width: 300px;
+            backdrop-filter: blur(15px);
+        }
+
+        .buoy-title {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .data-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .data-item {
+            background: rgba(30, 41, 59, 0.7);
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 3px solid #34d399;
+        }
+
+        .data-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .data-value {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #f1f5f9;
+        }
+
+        .wave-animation {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z' opacity='.25' fill='%2360a5fa'%3E%3C/path%3E%3Cpath d='M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z' opacity='.5' fill='%2360a5fa'%3E%3C/path%3E%3Cpath d='M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z' fill='%2360a5fa'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+            opacity: 0.1;
+            animation: wave 20s linear infinite;
+        }
+
+        @keyframes titleReveal {
+            0% { opacity: 0; transform: translateY(-50px) scale(0.8); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes subtitleReveal {
+            0% { opacity: 0; transform: translateY(30px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes mapReveal {
+            0% { opacity: 0; transform: translateY(50px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        @keyframes wave {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-1200px); }
+        }
+
+        .leaflet-popup-content-wrapper {
+            background: transparent !important;
+            box-shadow: none !important;
+            border: none !important;
+        }
+
+        .leaflet-popup-tip {
+            background: rgba(15, 23, 42, 0.95) !important;
+        }
+
+        .kubernetes-badge {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            animation: slideIn 2s ease-out 1.5s both;
+        }
+
+        @keyframes slideIn {
+            0% { opacity: 0; transform: translateX(-100px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // Mock water buoy data with realistic coordinates
+        const mockBuoyData = [
+            { id: 1, name: "Pacific Buoy Alpha", lat: 35.6762, lng: -120.6878, temp: 18.5, waveHeight: 2.3, windSpeed: 15.2, salinity: 35.1 },
+            { id: 2, name: "Atlantic Monitor Beta", lat: 40.7128, lng: -40.0059, temp: 22.1, waveHeight: 1.8, windSpeed: 12.4, salinity: 34.8 },
+            { id: 3, name: "Indian Ocean Gamma", lat: -25.2744, lng: 57.2769, temp: 26.3, waveHeight: 3.1, windSpeed: 18.7, salinity: 35.4 },
+            { id: 4, name: "Mediterranean Delta", lat: 36.1408, lng: 12.3642, temp: 24.7, waveHeight: 1.2, windSpeed: 8.9, salinity: 38.2 },
+            { id: 5, name: "North Sea Echo", lat: 56.4907, lng: 3.2044, temp: 12.8, waveHeight: 2.9, windSpeed: 22.1, salinity: 34.5 },
+            { id: 6, name: "Caribbean Foxtrot", lat: 18.7357, lng: -64.8963, temp: 28.4, waveHeight: 1.5, windSpeed: 14.3, salinity: 36.1 },
+            { id: 7, name: "Baltic Sea Golf", lat: 59.3293, lng: 18.0686, temp: 8.2, waveHeight: 0.8, windSpeed: 11.6, salinity: 7.8 },
+            { id: 8, name: "Bering Strait Hotel", lat: 65.7792, lng: -168.9689, temp: 2.1, waveHeight: 4.2, windSpeed: 28.5, salinity: 32.1 }
+        ];
+
+        function CloudWaveApp() {
+            const mapRef = useRef(null);
+            const [map, setMap] = useState(null);
+            const [buoyData, setBuoyData] = useState(mockBuoyData);
+            const [isLoading, setIsLoading] = useState(true);
+
+            useEffect(() => {
+                // Initialize map
+                const initMap = () => {
+                    if (mapRef.current && !map) {
+                        const newMap = L.map(mapRef.current, {
+                            center: [20, 0],
+                            zoom: 2,
+                            zoomControl: false,
+                            attributionControl: false
+                        });
+
+                        // Dark theme map
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                            attribution: ''
+                        }).addTo(newMap);
+
+                        // Add custom zoom control
+                        L.control.zoom({
+                            position: 'bottomright'
+                        }).addTo(newMap);
+
+                        setMap(newMap);
+                    }
+                };
+
+                const timer = setTimeout(initMap, 1000);
+                return () => clearTimeout(timer);
+            }, [map]);
+
+            useEffect(() => {
+                if (map) {
+                    // Add buoy markers
+                    buoyData.forEach(buoy => {
+                        const marker = L.circleMarker([buoy.lat, buoy.lng], {
+                            radius: 8,
+                            fillColor: '#60a5fa',
+                            color: '#ffffff',
+                            weight: 2,
+                            opacity: 1,
+                            fillOpacity: 0.8
+                        }).addTo(map);
+
+                        // Popup content
+                        const popupContent = `
+                            <div class="buoy-popup">
+                                <div class="buoy-title">
+                                    🌊 ${buoy.name}
+                                </div>
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <div class="data-label">Temperature</div>
+                                        <div class="data-value">${buoy.temp}°C</div>
+                                    </div>
+                                    <div class="data-item">
+                                        <div class="data-label">Wave Height</div>
+                                        <div class="data-value">${buoy.waveHeight}m</div>
+                                    </div>
+                                    <div class="data-item">
+                                        <div class="data-label">Wind Speed</div>
+                                        <div class="data-value">${buoy.windSpeed} km/h</div>
+                                    </div>
+                                    <div class="data-item">
+                                        <div class="data-label">Salinity</div>
+                                        <div class="data-value">${buoy.salinity} PSU</div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                        marker.bindPopup(popupContent, {
+                            className: 'custom-popup',
+                            closeButton: true,
+                            maxWidth: 350
+                        });
+
+                        // Animate marker
+                        marker.on('mouseover', function() {
+                            this.setStyle({
+                                radius: 12,
+                                fillColor: '#34d399'
+                            });
+                        });
+
+                        marker.on('mouseout', function() {
+                            this.setStyle({
+                                radius: 8,
+                                fillColor: '#60a5fa'
+                            });
+                        });
+                    });
+
+                    setIsLoading(false);
+                }
+            }, [map, buoyData]);
+
+            // Simulate real-time data updates
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setBuoyData(prevData => 
+                        prevData.map(buoy => ({
+                            ...buoy,
+                            temp: Math.round((buoy.temp + (Math.random() - 0.5) * 0.5) * 10) / 10,
+                            waveHeight: Math.round((Math.max(0.1, buoy.waveHeight + (Math.random() - 0.5) * 0.3)) * 10) / 10,
+                            windSpeed: Math.round((Math.max(0, buoy.windSpeed + (Math.random() - 0.5) * 2)) * 10) / 10
+                        }))
+                    );
+                }, 5000);
+
+                return () => clearInterval(interval);
+            }, []);
+
+            return (
+                <div className="container">
+                    <div className="hero-section">
+                        <h1 className="title">CloudWave</h1>
+                        <p className="subtitle">
+                            Real-time monitoring of water buoys across the globe, powered by cloud-native technologies. 
+                            Track ocean conditions, wave patterns, and environmental data with live updates from our 
+                            distributed sensor network.
+                        </p>
+                    </div>
+
+                    <div className="map-container">
+                        <div ref={mapRef} style={{height: '100%', width: '100%'}}></div>
+                        
+                        <div className="status-bar">
+                            <div className="status-indicator"></div>
+                            <span>Live Data • {buoyData.length} Active Buoys</span>
+                        </div>
+
+                        <div className="kubernetes-badge">
+                            ⚡ Powered by Kubernetes
+                        </div>
+                    </div>
+
+                    <div className="wave-animation"></div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<CloudWaveApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

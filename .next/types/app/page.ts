@@ -1,4 +1,4 @@
-// File: /Users/chaitanyaluniya/CNCF_Hackathon/src/app/page.tsx
+// File: C:\Users\NEERAJ\OneDrive\Desktop\CNCF_Hackathon\CloudWave\src\app\page.tsx
 import * as entry from '../../../src/app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

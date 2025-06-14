@@ -17,7 +17,7 @@ const HeroSection: React.FC = () => {
       </p>
       <div className="mt-8 flex justify-center gap-4">
         <div className="bg-blue-600/20 border border-blue-400/30 rounded-full px-6 py-2 text-blue-300 text-sm">
-          ⚡ Powered by Kubernetes
+          ⚡ Powered by Docker
         </div>
         <div className="bg-green-600/20 border border-green-400/30 rounded-full px-6 py-2 text-green-300 text-sm">
           🌊 Real-time Data
